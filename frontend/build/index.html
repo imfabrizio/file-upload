@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>File Uploader</title>
+  </head>
+  <body>
+    <div id="root">
+      <h1>File Uploader</h1>
+      <form id="uploadForm">
+        <input type="file" id="fileInput" />
+        <button type="submit">Upload</button>
+      </form>
+      <ul id="fileList"></ul>
+      <script>
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+
+        form.onsubmit = async (e) => {
+          e.preventDefault();
+          const formData = new FormData();
+          formData.append('file', fileInput.files[0]);
+
+          await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+
+          loadFiles();
+        };
+
+        async function loadFiles() {
+          const res = await fetch('/api/files');
+          const files = await res.json();
+          fileList.innerHTML = '';
+          files.forEach(file => {
+            const li = document.createElement('li');
+            li.textContent = file;
+            fileList.appendChild(li);
+          });
+        }
+
+        loadFiles();
+      </script>
+    </div>
+  </body>
+</html>
